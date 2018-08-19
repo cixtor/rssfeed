@@ -94,5 +94,13 @@ func (v *Item) CrawlContent() ([]byte, error) {
 }
 
 func (v *Item) isBanned() bool {
+	if strings.Contains(v.Title, "\x20(YC S") {
+		return true
+	}
+
+	if strings.Contains(v.Title, "\x20(YC W") {
+		return true
+	}
+
 	return false
 }
