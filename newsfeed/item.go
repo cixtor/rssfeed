@@ -102,6 +102,10 @@ func (v *Item) isBanned() bool {
 		return true
 	}
 
+	if strings.Contains(v.Link, "://www.businessinsider.com") {
+		return true
+	}
+
 	if strings.Contains(v.Title, "is hiring") {
 		return true
 	}
