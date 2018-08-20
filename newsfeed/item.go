@@ -94,6 +94,22 @@ func (v *Item) CrawlContent() ([]byte, error) {
 }
 
 func (v *Item) isBanned() bool {
+	if strings.Contains(v.Link, "://jobs.lever.co") {
+		return true
+	}
+
+	if strings.Contains(v.Link, "://www.themuse.com") {
+		return true
+	}
+
+	if strings.Contains(v.Title, "is hiring") {
+		return true
+	}
+
+	if strings.Contains(v.Title, "Is Hiring") {
+		return true
+	}
+
 	if strings.Contains(v.Title, "\x20(YC S") {
 		return true
 	}
