@@ -50,6 +50,10 @@ func (m *Mercury) SetAgent(agent string) {
 	m.agent = agent
 }
 
+func (m *Mercury) HasToken() bool {
+	return m.token != ""
+}
+
 func (m *Mercury) Download(uuid string, link string) (Article, error) {
 	if data, err := m.fetchFromCache(uuid); err == nil {
 		return m.convertIntoArticle(data)
