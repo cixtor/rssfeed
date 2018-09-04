@@ -6,8 +6,10 @@ import (
 	"syscall"
 
 	"github.com/cixtor/middleware"
+	"github.com/cixtor/rssfeed/mercury"
 )
 
+var client = mercury.New()
 var router = middleware.New()
 
 func main() {

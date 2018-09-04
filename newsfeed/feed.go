@@ -6,13 +6,16 @@ import (
 	"log"
 	"sync"
 	"time"
+
+	"github.com/cixtor/rssfeed/mercury"
 )
 
 type Feed struct {
 	sync.WaitGroup
-	hand  int
-	data  News
-	items []Item
+	hand   int
+	data   News
+	client *mercury.Mercury
+	items  []Item
 }
 
 type News struct {
@@ -45,7 +48,7 @@ func (v *Feed) DownloadItems() {
 			defer func() { <-sem }()
 			defer func() { wg.Done() }()
 
-			if err := item.Curate(); err != nil {
+			if err := item.Curate(v.client); err != nil {
 				log.Printf("%s [%s]", err, item.Link)
 				return
 			}

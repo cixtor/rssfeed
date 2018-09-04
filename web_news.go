@@ -14,7 +14,7 @@ func init() {
 }
 
 func webNews(w http.ResponseWriter, r *http.Request) {
-	rss, err := newsfeed.New(concurrency)
+	rss, err := newsfeed.New(client, concurrency)
 
 	if err != nil {
 		w.Write([]byte(err.Error()))

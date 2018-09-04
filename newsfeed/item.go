@@ -20,7 +20,7 @@ type Item struct {
 	Description string `xml:"description"`
 }
 
-func (v *Item) Curate() error {
+func (v *Item) Curate(client *mercury.Mercury) error {
 	if v.isBanned() {
 		return errors.New("banned")
 	}
@@ -30,7 +30,7 @@ func (v *Item) Curate() error {
 
 	var text string
 	// text, _ := v.Download()
-	data, err := mercury.Download(v.UUID, v.Link)
+	data, err := client.Download(v.UUID, v.Link)
 
 	if err != nil {
 		return err
