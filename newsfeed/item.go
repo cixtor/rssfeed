@@ -28,7 +28,6 @@ func (v *Item) Curate(client *mercury.Mercury) error {
 	mark := strings.Index(v.Comments, "=")
 	v.UUID = v.Comments[mark+1:]
 
-	var text string
 	// text, _ := v.Download()
 	data, err := client.Download(v.UUID, v.Link)
 
@@ -36,17 +35,7 @@ func (v *Item) Curate(client *mercury.Mercury) error {
 		return err
 	}
 
-	// if data.LeadImageURL != "" {
-	// 	text += "<div><img src=\"" + data.LeadImageURL + "\"></div>"
-	// }
-
-	text += data.Content
-
-	if v.Comments != "" {
-		text += "<hr><a href=\"" + v.Comments + "\">Comments</a>"
-	}
-
-	v.Description = text
+	v.Description = data.Content + "<hr><a href=\"" + v.Comments + "\">Comments</a>"
 
 	return nil
 }
