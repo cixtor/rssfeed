@@ -5,3 +5,6 @@ all:
 
 logs:
 	docker-compose logs -f
+
+register:
+	curl "http://localhost:9628/register?token=$$(cat config.json)"
