@@ -21,7 +21,7 @@ func webCheck(w http.ResponseWriter, r *http.Request) {
 	}
 
 	item := newsfeed.Item{Link: link}
-	out, origin := item.Download()
+	out, origin := item.Download(client)
 	_ = os.Remove("/tmp/.txt")
 
 	w.Header().Set("content-type", "text/plain")

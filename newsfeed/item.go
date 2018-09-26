@@ -28,32 +28,37 @@ func (v *Item) Curate(client *mercury.Mercury) error {
 	mark := strings.Index(v.Comments, "=")
 	v.UUID = v.Comments[mark+1:]
 
-	// text, _ := v.Download()
-	data, err := client.Download(v.UUID, v.Link)
-
-	if err != nil {
-		return err
-	}
-
-	v.Description = data.Content + "<hr><a href=\"" + v.Comments + "\">Comments</a>"
+	text, _ := v.Download(client)
+	forum := "<hr><a href=\"" + v.Comments + "\">Comments</a>"
+	v.Description = text + forum
 
 	return nil
 }
 
-func (v *Item) Download() (string, string) {
+func (v *Item) Download(client *mercury.Mercury) (string, string) {
 	info, err := url.Parse(v.Link)
 
 	if err != nil {
 		return err.Error(), "none"
 	}
 
-	body, err := v.CrawlContent()
+	if v.HasBlockedMercury(info.Host) {
+		body, err := v.CrawlContent()
 
-	if err != nil {
-		return err.Error(), "none"
+		if err != nil {
+			return err.Error(), "none"
+		}
+
+		return parsers.Article(info.Host, string(body))
 	}
 
-	return parsers.Article(info.Host, string(body))
+	data, err := client.Download(v.UUID, v.Link)
+
+	if err != nil {
+		return err.Error(), "mercury"
+	}
+
+	return data.Content, "mercury"
 }
 
 func (v *Item) CrawlContent() ([]byte, error) {
@@ -80,6 +85,18 @@ func (v *Item) CrawlContent() ([]byte, error) {
 	}
 
 	return body, nil
+}
+
+func (v *Item) HasBlockedMercury(host string) bool {
+	if host == "www.bloomberg.com" {
+		return true
+	}
+
+	if host == "github.com" {
+		return true
+	}
+
+	return false
 }
 
 func (v *Item) isBanned() bool {
