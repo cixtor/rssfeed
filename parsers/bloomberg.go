@@ -15,11 +15,18 @@ func bloomberg(body string) string {
 
 	if mark == -1 {
 		mark = strings.Index(body, `<div class="body-copy-v2 fence-body">`)
+
+		if mark == -1 {
+			return body
+		}
 	}
 
 	body = body[mark:]
 	mark = strings.Index(body, `<ol class="noscript-footnotes"></ol>`)
-	body = body[0:mark]
 
-	return body
+	if mark == -1 {
+		return body
+	}
+
+	return body[0:mark]
 }
