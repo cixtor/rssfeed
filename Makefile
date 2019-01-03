@@ -10,3 +10,9 @@ build:
 	docker-compose down
 	docker-compose up -d --build
 	curl "http://localhost:9628/"
+
+hotfix:
+	env GOOS=linux GOARCH=amd64 go build -o /tmp/rssfeed
+	docker cp /tmp/rssfeed rssfeed:/go/bin/rssfeed
+	docker-compose restart
+	rm -- /tmp/rssfeed
