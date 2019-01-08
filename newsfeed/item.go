@@ -42,23 +42,21 @@ func (v *Item) Download(client *mercury.Mercury) (string, string) {
 		return err.Error(), "none"
 	}
 
-	if v.HasBlockedMercury(info.Host) {
-		body, err := v.CrawlContent()
+	if !v.HasBlockedMercury(info.Host) {
+		data, err := client.Download(v.UUID, v.Link)
 
-		if err != nil {
-			return err.Error(), "none"
+		if err == nil && !data.Unauthorized() {
+			return data.Content, "mercury"
 		}
-
-		return parsers.Article(info.Host, string(body))
 	}
 
-	data, err := client.Download(v.UUID, v.Link)
+	body, err := v.CrawlContent()
 
 	if err != nil {
-		return err.Error(), "mercury"
+		return err.Error(), "none"
 	}
 
-	return data.Content, "mercury"
+	return parsers.Article(info.Host, string(body))
 }
 
 func (v *Item) CrawlContent() ([]byte, error) {
@@ -88,6 +86,10 @@ func (v *Item) CrawlContent() ([]byte, error) {
 }
 
 func (v *Item) HasBlockedMercury(host string) bool {
+	if host == "developer.apple.com" {
+		return true
+	}
+
 	if host == "www.bloomberg.com" {
 		return true
 	}

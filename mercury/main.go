@@ -30,6 +30,7 @@ type Article struct {
 	Direction     string    `json:"direction"`
 	LeadImageURL  string    `json:"lead_image_url"`
 	NextPageURL   string    `json:"next_page_url"`
+	Message       string    `json:"message"`
 	DatePublished time.Time `json:"date_published"`
 	RenderedPages int       `json:"rendered_pages"`
 	TotalPages    int       `json:"total_pages"`
@@ -66,4 +67,8 @@ func (m *Mercury) Download(uuid string, link string) (Article, error) {
 	}
 
 	return Article{}, errors.New("article is not available")
+}
+
+func (v *Article) Unauthorized() bool {
+	return v.Message == "Unauthorized"
 }
