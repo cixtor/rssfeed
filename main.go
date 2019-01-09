@@ -4,6 +4,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/cixtor/middleware"
 	"github.com/cixtor/rssfeed/mercury"
@@ -17,9 +18,11 @@ func main() {
 	signal.Notify(shutdown, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
 
 	router.Port = "9628"
-	router.IdleTimeout = 5
-	router.ReadTimeout = 5
-	router.WriteTimeout = 10
+	router.IdleTimeout = 5 * time.Second
+	router.ReadTimeout = 5 * time.Second
+	router.WriteTimeout = 10 * time.Second
+	router.ShutdownTimeout = 10 * time.Second
+	router.ReadHeaderTimeout = 5 * time.Second
 
 	go func() {
 		<-shutdown
