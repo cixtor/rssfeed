@@ -3,12 +3,13 @@ package main
 import (
 	"log"
 	"net/http"
-	"os"
+	"time"
 
-	"github.com/cixtor/rssfeed/newsfeed"
+	"github.com/cixtor/readability"
 )
 
 func init() {
+	router.GET("/test", webCheck)
 	router.GET("/check", webCheck)
 }
 
@@ -16,18 +17,20 @@ func webCheck(w http.ResponseWriter, r *http.Request) {
 	link := r.URL.Query().Get("url")
 
 	if link == "" {
-		http.Error(w, "400 bad request", http.StatusBadRequest)
+		http.Error(w, http.StatusText(400), http.StatusBadRequest)
 		return
 	}
 
-	item := newsfeed.Item{Link: link}
-	out, origin := item.Download(client)
-	_ = os.Remove("/tmp/.txt")
+	doc, err := readability.FromURL(link, 10*time.Second)
+
+	if err != nil {
+		log.Println(err)
+		return
+	}
 
 	w.Header().Set("content-type", "text/plain")
-	w.Header().Set("x-html-parser", origin)
 
-	if _, err := w.Write([]byte(out)); err != nil {
+	if _, err := w.Write([]byte(doc.Content)); err != nil {
 		log.Println(err)
 		return
 	}

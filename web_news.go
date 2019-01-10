@@ -14,12 +14,7 @@ func init() {
 }
 
 func webNews(w http.ResponseWriter, r *http.Request) {
-	if !client.HasToken() {
-		http.Redirect(w, r, "/register", 302)
-		return
-	}
-
-	rss, err := newsfeed.New(client, concurrency)
+	rss, err := newsfeed.New(concurrency)
 
 	if err != nil {
 		fmt.Fprintf(w, "newsfeed.New %s", err)

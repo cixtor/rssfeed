@@ -2,26 +2,23 @@ package newsfeed
 
 import (
 	"encoding/xml"
-
-	"github.com/cixtor/rssfeed/mercury"
+	"io"
 )
 
 // New returns an instance of the RSS feed from HackerNews.
 //
-// Parameter `hand` defines the number of concurrent web crawlers.
-func New(client *mercury.Mercury, hand int) (*Feed, error) {
-	rss := new(Feed)
+// Parameter `batch` defines the number of concurrent web crawlers.
+func New(batch int) (*Feed, error) {
+	var err error
+	var reader io.Reader
 
-	rss.hand = hand
-	rss.client = client
+	rss := &Feed{batch: batch}
 
-	reader, err := Curl("https://news.ycombinator.com/rss")
-
-	if err != nil {
+	if reader, err = Curl("https://news.ycombinator.com/rss"); err != nil {
 		return nil, err
 	}
 
-	if err := xml.NewDecoder(reader).Decode(&rss.data); err != nil {
+	if err = xml.NewDecoder(reader).Decode(&rss.data); err != nil {
 		return nil, err
 	}
 

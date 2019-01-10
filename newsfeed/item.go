@@ -2,13 +2,13 @@ package newsfeed
 
 import (
 	"errors"
+	"fmt"
 	"io/ioutil"
-	"net/url"
 	"os"
 	"strings"
+	"time"
 
-	"github.com/cixtor/rssfeed/mercury"
-	"github.com/cixtor/rssfeed/parsers"
+	"github.com/cixtor/readability"
 )
 
 type Item struct {
@@ -20,7 +20,7 @@ type Item struct {
 	Description string `xml:"description"`
 }
 
-func (v *Item) Curate(client *mercury.Mercury) error {
+func (v *Item) Curate() error {
 	if v.isBanned() {
 		return errors.New("banned")
 	}
@@ -28,35 +28,19 @@ func (v *Item) Curate(client *mercury.Mercury) error {
 	mark := strings.Index(v.Comments, "=")
 	v.UUID = v.Comments[mark+1:]
 
-	text, _ := v.Download(client)
-	forum := "<hr><a href=\"" + v.Comments + "\">Comments</a>"
-	v.Description = text + forum
+	doc, err := readability.FromURL(v.Link, 10*time.Second)
+
+	if err != nil {
+		return err
+	}
+
+	v.Description = fmt.Sprintf(
+		"%s<hr><a href=\"%s\">Comments</a>",
+		doc.Content,
+		v.Comments,
+	)
 
 	return nil
-}
-
-func (v *Item) Download(client *mercury.Mercury) (string, string) {
-	info, err := url.Parse(v.Link)
-
-	if err != nil {
-		return err.Error(), "none"
-	}
-
-	if !v.HasBlockedMercury(info.Host) {
-		data, err := client.Download(v.UUID, v.Link)
-
-		if err == nil && !data.Unauthorized() {
-			return data.Content, "mercury"
-		}
-	}
-
-	body, err := v.CrawlContent()
-
-	if err != nil {
-		return err.Error(), "none"
-	}
-
-	return parsers.Article(info.Host, string(body))
 }
 
 func (v *Item) CrawlContent() ([]byte, error) {

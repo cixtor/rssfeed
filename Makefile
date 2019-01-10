@@ -1,4 +1,4 @@
-all: build register
+hotfix: rebuild register
 
 logs:
 	docker-compose logs -f
@@ -11,7 +11,7 @@ build:
 	docker-compose up -d --build
 	curl "http://localhost:9628/"
 
-hotfix:
+rebuild:
 	env GOOS=linux GOARCH=amd64 go build -o /tmp/rssfeed
 	docker cp /tmp/rssfeed rssfeed:/go/bin/rssfeed
 	docker-compose restart

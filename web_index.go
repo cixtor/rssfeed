@@ -9,5 +9,5 @@ func init() {
 }
 
 func webIndex(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Hello World!\n"))
+	w.Write([]byte("rssfeed.index\n"))
 }
