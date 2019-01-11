@@ -1,10 +1,7 @@
-hotfix: rebuild register
+hotfix: rebuild logs
 
 logs:
-	docker-compose logs -f
-
-register:
-	curl "http://localhost:9628/register?token=$$(cat config.json)"
+	docker-compose logs -f --tail=1
 
 build:
 	docker-compose down
