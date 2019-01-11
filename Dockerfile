@@ -6,6 +6,6 @@ RUN go get github.com/cixtor/middleware
 
 RUN go install github.com/cixtor/rssfeed
 
-ENTRYPOINT /go/bin/rssfeed
+ENTRYPOINT ["/go/bin/rssfeed"]
 
 EXPOSE 9628
