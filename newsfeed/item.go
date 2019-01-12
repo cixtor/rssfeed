@@ -43,31 +43,6 @@ func (v *Item) Curate() error {
 	return nil
 }
 
-func (v *Item) CrawlContent() ([]byte, error) {
-	filename := "/tmp/" + v.UUID + ".txt"
-
-	if _, err := os.Stat(filename); !os.IsNotExist(err) {
-		return ioutil.ReadFile(filename)
-	}
-
-	reader, err := Curl(v.Link)
-
-	if err != nil {
-		return []byte{}, err
-	}
-
-	body, err := ioutil.ReadAll(reader)
-
-	if err != nil {
-		return []byte{}, err
-	}
-
-	if v.UUID != "" {
-		_ = ioutil.WriteFile(filename, body, 0644)
-	}
-
-	return body, nil
-}
 
 func (v *Item) HasBlockedMercury(host string) bool {
 	if host == "developer.apple.com" {
