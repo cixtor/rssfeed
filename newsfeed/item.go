@@ -44,22 +44,6 @@ func (v *Item) Curate() error {
 }
 
 
-func (v *Item) HasBlockedMercury(host string) bool {
-	if host == "developer.apple.com" {
-		return true
-	}
-
-	if host == "www.bloomberg.com" {
-		return true
-	}
-
-	if host == "github.com" {
-		return true
-	}
-
-	return false
-}
-
 func (v *Item) isBanned() bool {
 	if strings.Contains(v.Link, "://jobs.lever.co") {
 		return true
