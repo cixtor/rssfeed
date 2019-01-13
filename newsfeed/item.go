@@ -43,35 +43,12 @@ func (v *Item) Curate() error {
 	return nil
 }
 
-
-func (v *Item) isBanned() bool {
-	if strings.Contains(v.Link, "://jobs.lever.co") {
-		return true
-	}
-
-	if strings.Contains(v.Link, "://www.themuse.com") {
-		return true
-	}
-
-	if strings.Contains(v.Link, "://www.businessinsider.com") {
-		return true
-	}
-
-	if strings.Contains(v.Title, "is hiring") {
-		return true
-	}
-
-	if strings.Contains(v.Title, "Is Hiring") {
-		return true
-	}
-
-	if strings.Contains(v.Title, "\x20(YC S") {
-		return true
-	}
-
-	if strings.Contains(v.Title, "\x20(YC W") {
-		return true
-	}
-
-	return false
+func (v *Item) isIrrelevant() bool {
+	return strings.Contains(v.Link, "://jobs.lever.co") ||
+		strings.Contains(v.Link, "://www.themuse.com") ||
+		strings.Contains(v.Link, "://www.businessinsider.com") ||
+		strings.Contains(v.Title, "is hiring") ||
+		strings.Contains(v.Title, "Is Hiring") ||
+		strings.Contains(v.Title, "\x20(YC S") ||
+		strings.Contains(v.Title, "\x20(YC W")
 }
