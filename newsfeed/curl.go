@@ -9,24 +9,26 @@ import (
 	"time"
 )
 
-const timeout time.Duration = 6 * time.Second
+const timeout time.Duration = 10 * time.Second
 
 func Curl(target string) (io.Reader, error) {
-	info, err := url.Parse(target)
+	var err error
+	var uri *url.URL
+	var req *http.Request
+	var res *http.Response
 
-	if err != nil {
+	if uri, err = url.Parse(target); err != nil {
 		return nil, err
 	}
 
 	client := &http.Client{Timeout: timeout}
-	req, err := http.NewRequest("GET", target, nil)
 
-	if err != nil {
+	if req, err = http.NewRequest("GET", target, nil); err != nil {
 		return nil, err
 	}
 
-	req.Header.Set("host", info.Host)
-	req.Header.Set("authority", info.Host)
+	req.Header.Set("host", uri.Host)
+	req.Header.Set("authority", uri.Host)
 	req.Header.Set("pragma", "no-cache")
 	req.Header.Set("connection", "keep-alive")
 	req.Header.Set("cache-control", "no-cache")
@@ -36,21 +38,37 @@ func Curl(target string) (io.Reader, error) {
 	req.Header.Set("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8")
 	req.Header.Set("accept-language", "en-US,en;q=0.9")
 
-	res, err := client.Do(req)
-
-	if err != nil {
+	if res, err = client.Do(req); err != nil {
 		return nil, err
 	}
 
 	defer res.Body.Close()
 
-	ctype := res.Header.Get("Content-Type")
-
-	if !isValidContentType(ctype) {
-		return nil, fmt.Errorf("invalid content-type `%s`", ctype)
+	if mime := res.Header.Get("Content-Type"); !isValidContentType(mime) {
+		return nil, fmt.Errorf("invalid content-type `%s`", mime)
 	}
 
 	var buf bytes.Buffer
 	(&buf).ReadFrom(res.Body)
 	return &buf, nil
+}
+
+func isValidContentType(mime string) bool {
+	allowed := map[string]bool{
+		"text/html":                          true,
+		"application/rss+xml":                true,
+		"text/html;charset=utf-8":            true,
+		"text/html;charset=UTF-8":            true,
+		"text/html; charset=utf-8":           true,
+		"text/html; charset=UTF-8":           true,
+		"text/html; charset=iso-8859-1":      true,
+		"text/html; charset=\"UTF-8\"":       true,
+		"application/rss+xml; charset=utf-8": true,
+	}
+
+	if value, ok := allowed[mime]; ok {
+		return value
+	}
+
+	return false
 }

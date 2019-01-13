@@ -3,10 +3,8 @@ package newsfeed
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
-	"os"
+	"io"
 	"strings"
-	"time"
 
 	"github.com/cixtor/readability"
 )
@@ -21,16 +19,22 @@ type Item struct {
 }
 
 func (v *Item) Curate() error {
-	if v.isBanned() {
-		return errors.New("banned")
+	if v.isIrrelevant() {
+		return errors.New("irrelevant content")
 	}
 
 	mark := strings.Index(v.Comments, "=")
 	v.UUID = v.Comments[mark+1:]
 
-	doc, err := readability.FromURL(v.Link, 10*time.Second)
+	var err error
+	var rdr io.Reader
+	var doc readability.Article
 
-	if err != nil {
+	if rdr, err = Curl(v.Link); err != nil {
+		return err
+	}
+
+	if doc, err = readability.FromReader(rdr, v.Link); err != nil {
 		return err
 	}
 
