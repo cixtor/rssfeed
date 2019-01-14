@@ -1,11 +1,11 @@
 package main
 
 import (
-	"log"
+	"io"
 	"net/http"
-	"time"
 
 	"github.com/cixtor/readability"
+	"github.com/cixtor/rssfeed/newsfeed"
 )
 
 func init() {
@@ -14,24 +14,29 @@ func init() {
 }
 
 func webCheck(w http.ResponseWriter, r *http.Request) {
-	link := r.URL.Query().Get("url")
+	var err error
+	var uri string
+	var rdr io.Reader
+	var doc readability.Article
 
-	if link == "" {
+	if uri = r.URL.Query().Get("url"); uri == "" {
 		http.Error(w, http.StatusText(400), http.StatusBadRequest)
 		return
 	}
 
-	doc, err := readability.FromURL(link, 10*time.Second)
-
-	if err != nil {
-		log.Println(err)
+	if rdr, err = newsfeed.Curl(uri); err != nil {
+		http.Error(w, "newsfeed.Curl: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	w.Header().Set("content-type", "text/plain")
-
-	if _, err := w.Write([]byte(doc.Content)); err != nil {
-		log.Println(err)
+	if doc, err = readability.FromReader(rdr, uri); err != nil {
+		http.Error(w, "readability.FromReader: "+err.Error(), http.StatusInternalServerError)
 		return
+	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+
+	if _, err = w.Write([]byte(doc.Content)); err != nil {
+		panic(err)
 	}
 }
