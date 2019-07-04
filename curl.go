@@ -1,4 +1,4 @@
-package newsfeed
+package main
 
 import (
 	"bytes"
@@ -62,7 +62,12 @@ func isValidContentType(mime string) bool {
 		"text/html; charset=utf-8":           true,
 		"text/html; charset=UTF-8":           true,
 		"text/html; charset=iso-8859-1":      true,
+		"text/html; charset=ISO-8859-1":      true,
+		"text/html; charset=\"utf-8\"":       true,
 		"text/html; charset=\"UTF-8\"":       true,
+		"text/html;;charset=UTF-8":           true,
+		"text/plain; charset=utf-8":          true,
+		"text/plain; charset=UTF-8":          true,
 		"application/rss+xml; charset=utf-8": true,
 	}
 

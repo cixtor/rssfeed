@@ -1,4 +1,4 @@
-package newsfeed
+package main
 
 import (
 	"errors"
@@ -34,7 +34,7 @@ func (v *Item) Curate() error {
 		return err
 	}
 
-	if doc, err = readability.FromReader(rdr, v.Link); err != nil {
+	if doc, err = readability.New().Parse(rdr, v.Link); err != nil {
 		return err
 	}
 

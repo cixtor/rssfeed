@@ -3,8 +3,6 @@ package main
 import (
 	"fmt"
 	"net/http"
-
-	"github.com/cixtor/rssfeed/newsfeed"
 )
 
 const concurrency int = 30
@@ -14,10 +12,10 @@ func init() {
 }
 
 func webNews(w http.ResponseWriter, r *http.Request) {
-	rss, err := newsfeed.New(concurrency)
+	rss, err := NewFeed(concurrency)
 
 	if err != nil {
-		fmt.Fprintf(w, "newsfeed.New %s", err)
+		fmt.Fprintf(w, "NewFeed %s", err)
 		return
 	}
 

@@ -1,4 +1,4 @@
-package newsfeed
+package main
 
 import (
 	"encoding/xml"
@@ -26,6 +26,26 @@ type Channel struct {
 	Description string `xml:"description"`
 	BuildDate   string `xml:"lastBuildDate"`
 	Items       []Item `xml:"item"`
+}
+
+// NewFeed returns an instance of the RSS feed from HackerNews.
+//
+// Parameter `batch` defines the number of concurrent web crawlers.
+func NewFeed(batch int) (*Feed, error) {
+	var err error
+	var reader io.Reader
+
+	rss := &Feed{batch: batch}
+
+	if reader, err = Curl("https://news.ycombinator.com/rss"); err != nil {
+		return nil, err
+	}
+
+	if err = xml.NewDecoder(reader).Decode(&rss.data); err != nil {
+		return nil, err
+	}
+
+	return rss, nil
 }
 
 func (v *Feed) TotalItems() int {
