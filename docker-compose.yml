@@ -6,7 +6,5 @@ services:
     container_name: rssfeed
     ports:
     - 9628:9628/tcp
-    volumes:
-    - .:/go/src/github.com/cixtor/rssfeed
 version: '3.1'
 
