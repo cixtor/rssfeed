@@ -1,4 +1,4 @@
-FROM golang:1.10.4-stretch
+FROM golang:1.14.3-stretch
 
 RUN go get github.com/cixtor/rssfeed
 
