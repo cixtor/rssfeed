@@ -18,7 +18,7 @@ func main() {
 	router.Port = "9628"
 	router.IdleTimeout = 5 * time.Second
 	router.ReadTimeout = 5 * time.Second
-	router.WriteTimeout = 10 * time.Second
+	router.WriteTimeout = 40 * time.Second
 	router.ShutdownTimeout = 10 * time.Second
 	router.ReadHeaderTimeout = 5 * time.Second
 
